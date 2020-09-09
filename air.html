@@ -3,64 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script type="text/javascript" async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0D3f-S4Vf68qZ9OcIr01UXBEunVVUdW8&callback=initialize"></script>       
-
+    <link rel="stylesheet" href="style.css">
+    <script type="text/javascript" async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0D3f-S4Vf68qZ9OcIr01UXBEunVVUdW8&callback=initialize"></script>    
+    <script src='https://kit.fontawesome.com/8e7fb7d8d3.js' crossorigin='anonymous'></script>   
     <title>空汙查詢
     </title>
-    <style>
-        #map {
-            width: 500px;
-            height: 550px;
-            margin-bottom: 60px;
-      }
-      ul{
-          list-style: none;
-      }
-    </style>
 </head>
 <body>
-    <h1>即時空品</h1>
-    <h2>搜尋測站</h2>
-    <select name="searchSite" id="searchSite">
-        <option value="測試">暫無測站</option>
-    </select>
-    <input type="button" value="確認" id="confirm">
-    <h2>
-        最近測站：
-        <span id="nearSite"></span>
-    </h2>
-    <h2>
-        搜尋結果:
-        <span id="searchResult"></span>
-    </h2>
-    <ul>
-        <li>
-            AQI：
-            <span id="aqi"></span>
-        </li>
-        <li>
-            PM2.5:
-            <span id="pm"></span>
-        </li>
-        <li>
-            發佈時間：
-            <span id="time"></span>
-        </li>
-        <li>
-            狀態：
-            <span id="airstatus"></span>
-        </li>
-    </ul>
-    <h2>AQI指標</h2>
-    <div>
-        0~50:
-    </div>
-    <h2>
-        地圖
-    </h2>
-
-    <div id="map">
-
+    <div class="content">
+        <h1>即時空氣品質查詢  <i class="fas fa-smog"></i>  <i class="fas fa-search"></i></h1>
+        <h2>
+            最近測站：
+            <span id="nearSite">無</span>
+        </h2>
+        <form action="">
+            <h2>搜尋測站：
+            </h2>
+            <select name="searchResult" id="searchResult">
+                <option value="測試">無</option>
+            </select>
+            <input type="button" value="確認" id="confirm">
+        </form>
+        <div class="datas">
+            <h2>
+                搜尋結果：
+                <span id="searchSite">無</span>
+            </h2>
+            <ul>
+                <li>
+                    AQI：
+                    <span id="aqi">無</span>
+                </li>
+                <li>
+                    PM2.5：
+                    <span id="pm">無</span>
+                </li>
+                <li>
+                    發佈時間：
+                    <span id="time">無</span>
+                </li>
+                <li>
+                    狀態：
+                    <span id="airstatus">無</span>
+                </li>
+            </ul>
+        </div>
+        <h2>AQI指標參考</h2>
+        
+        <table>
+            <tr>
+                <td class="green">0~50</td>
+                <td>良好</td>
+                <td class="purple">201~300</td>
+                <td>非常不健康</td>
+                
+            </tr>
+            <tr>
+                <td class="yellow">51~100</td>
+                <td>普通</td>
+                <td class="brown">301~400</td>
+                <td>危害</td>
+            </tr>
+            <tr>
+                <td class="orange">101~150</td>
+                <td>對敏感族群不健康</td>
+                
+                <td class="brown">401~500</td>
+                <td>危害</td>
+            </tr>
+            <tr>
+                <td class="red">151~200</td>
+                <td>對所有族群不健康</td>
+            </tr>
+            <tr>
+            </tr>
+        </table>
+        <br>
+        <a href="https://airtw.epa.gov.tw/CHT/Information/Standard/AirQualityIndicator.aspx">參考來源：行政院環境保護署，空品指標</a>
+        
+        <h2>
+            全臺空品狀況概覽
+        </h2>
+    
+        <div id="map">
+    
+        </div>
+        <a href="https://opendata.epa.gov.tw/Data/Contents/AQI/">資料來源：行政院環境保護署。環境資源資料開放平臺。</a>
     </div>
     <script>
         var data;
@@ -113,6 +141,7 @@
                 }
             }
             nearSite.innerHTML= data[minKey].SiteName;
+            searchSite.innerHTML= data[minKey].SiteName;
             aqi.innerHTML= data[minKey]['AQI'];
             pm.innerHTML= data[minKey]['PM2.5'];
             time.innerHTML= data[minKey].PublishTime;
@@ -125,14 +154,14 @@
             for(let i =0;i<data.length;i++){
                 optionGroup += '<option value="'+i+'">'+data[i].SiteName+'</option>';
             }
-            searchSite.innerHTML = optionGroup;
+            searchResult.innerHTML = optionGroup;
         }
         confirm.addEventListener('click',function(){
-            searchResult.innerHTML= data[searchSite.value].SiteName;
-            aqi.innerHTML= data[searchSite.value]['AQI'];
-            pm.innerHTML= data[searchSite.value]['PM2.5'];
-            time.innerHTML= data[searchSite.value].PublishTime;
-            airstatus.innerHTML= data[searchSite.value].Status;
+            searchSite.innerHTML= data[searchResult.value].SiteName;
+            aqi.innerHTML= data[searchResult.value]['AQI'];
+            pm.innerHTML= data[searchResult.value]['PM2.5'];
+            time.innerHTML= data[searchResult.value].PublishTime;
+            airstatus.innerHTML= data[searchResult.value].Status;
         });
 
         //初始化地圖，一開始是整個台灣，api連上後，標上各個測站的marker，還有數字，並加上infowindow
@@ -168,10 +197,6 @@
 
             }
         }
-          
-
-
-
     </script>
 </body>
 </html>
