@@ -104,7 +104,7 @@
             searchResult = document.getElementById("searchResult");
         var url="https://opendata.epa.gov.tw/api/v1/AQI?%24skip=0&%24top=1000&%24format=json",
             charturl="https://opendata.epa.gov.tw/api/v1/ATM00679?%24skip=0&%24top=1000&%24format=json";
-        var map, markerLatLng = [],marker=[],infowindow=[];
+        var map, markerLatLng = [],marker=[],infowindow=[],markercolor=[];
 
         
         function initialize(position) {
@@ -175,6 +175,12 @@
 
         function addmarker(){
             for(let i =0;i<data.length;i++){
+                if( 0<=data[i].AQI&&data[i].AQI<=50)markercolor[i]="green";
+                else if(51<=data[i].AQI&&data[i].AQI<=100)markercolor[i]="yellow";
+                else if(101<=data[i].AQI&&data[i].AQI<=150)markercolor[i]="orange";
+                else if(151<=data[i].AQI&&data[i].AQI<=200)markercolor[i]="red";
+                else if(201<=data[i].AQI&&data[i].AQI<=300)markercolor[i]="purple";
+                else if(301<=data[i].AQI&&data[i].AQI<=500)markercolor[i]="brown";
                 markerLatLng.push({});
                 markerLatLng[i].lat = parseFloat(data[i].Latitude,10);
                 markerLatLng[i].lng = parseFloat(data[i].Longitude,10);
@@ -183,7 +189,7 @@
                     map:map,
                     icon: {
                         path: google.maps.SymbolPath.CIRCLE,
-                        fillColor: 'red',
+                        fillColor: markercolor[i],
                         fillOpacity: data[i]['AQI']/200,
                         scale:  data[i]['AQI']/5,
                         strokeWeight: .5,
