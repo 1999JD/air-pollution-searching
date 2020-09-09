@@ -112,7 +112,6 @@
         xhr.send();
         xhr.onload = function(){
             data = JSON.parse(xhr.response);
-            getLocation();
         }
         
         function getLocation()
@@ -164,13 +163,13 @@
             airstatus.innerHTML= data[searchResult.value].Status;
         });
 
-        //初始化地圖，一開始是整個台灣，api連上後，標上各個測站的marker，還有數字，並加上infowindow
         function initialize(position) {
             map = new google.maps.Map(document.getElementById('map'), {
                 zoom: 8,
                 center: new google.maps.LatLng(23.5,121),
                 mapTypeId: 'terrain'
             });
+            getLocation();
         }
         function addmarker(){
             var markerLatLng = [],marker=[];
@@ -182,9 +181,6 @@
                     position:markerLatLng[i],
                     map:map,
                     icon: {
-                        // path: google.maps.SymbolPath.FORWARD_OPEN_ARROW,
-                        // scale: 3,
-                        // strokeColor:"green"
                         path: google.maps.SymbolPath.CIRCLE,
                         fillColor: 'red',
                         fillOpacity: data[i]['AQI']/200,
