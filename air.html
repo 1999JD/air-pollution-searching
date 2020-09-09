@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <script type="text/javascript" async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0D3f-S4Vf68qZ9OcIr01UXBEunVVUdW8&callback=initialize"></script>    
+    <script type="text/javascript" async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0D3f-S4Vf68qZ9OcIr01UXBEunVVUdW8"></script>    
     <script src='https://kit.fontawesome.com/8e7fb7d8d3.js' crossorigin='anonymous'></script>   
     <title>空汙查詢
     </title>
@@ -106,12 +106,13 @@
             charturl="https://opendata.epa.gov.tw/api/v1/ATM00679?%24skip=0&%24top=1000&%24format=json";
         var map;
 
-    
+        initialize();
         var xhr = new XMLHttpRequest();
         xhr.open('GET',url,true);
         xhr.send();
         xhr.onload = function(){
             data = JSON.parse(xhr.response);
+            getLocation();
         }
         
         function getLocation()
@@ -169,7 +170,6 @@
                 center: new google.maps.LatLng(23.5,121),
                 mapTypeId: 'terrain'
             });
-            getLocation();
         }
         function addmarker(){
             var markerLatLng = [],marker=[];
