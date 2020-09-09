@@ -104,10 +104,9 @@
             searchResult = document.getElementById("searchResult");
         var url="https://opendata.epa.gov.tw/api/v1/AQI?%24skip=0&%24top=1000&%24format=json",
             charturl="https://opendata.epa.gov.tw/api/v1/ATM00679?%24skip=0&%24top=1000&%24format=json";
-        var map;
+        var map, markerLatLng = [],marker=[],infowindow=[];
 
-    
-    
+        
         function initialize(position) {
             map = new google.maps.Map(document.getElementById('map'), {
                 zoom: 8,
@@ -116,6 +115,7 @@
             });
             getLocation();
         }
+        initialize();
         var xhr = new XMLHttpRequest();
         xhr.open('GET',url,true);
         xhr.send();
@@ -174,7 +174,6 @@
         });
 
         function addmarker(){
-            var markerLatLng = [],marker=[];
             for(let i =0;i<data.length;i++){
                 markerLatLng.push({});
                 markerLatLng[i].lat = parseFloat(data[i].Latitude,10);
@@ -192,9 +191,20 @@
                     },
                     label:{text:data[i]['AQI'],color:"blue"}
                 });
-
             }
+            info();
         }
+        function info(){
+            for(let i =0 ;i<data.length;i++){
+                infowindow[i] = new google.maps.InfoWindow({
+                    content: ""+data[i].SiteName
+                });
+                marker[i].addListener('click', function() {
+                infowindow[i].open(map, marker[i]);
+            });
+        }
+    }
+
     </script>
 </body>
 </html>
