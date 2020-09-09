@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript" async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0D3f-S4Vf68qZ9OcIr01UXBEunVVUdW8&callback=initialize"></script>       
+
+    <title>空汙查詢
+    </title>
+    <style>
+        #map {
+            width: 500px;
+            height: 550px;
+            margin-bottom: 60px;
+      }
+      ul{
+          list-style: none;
+      }
+    </style>
+</head>
+<body>
+    <h1>即時空品</h1>
+    <h2>搜尋測站</h2>
+    <select name="searchSite" id="searchSite">
+        <option value="測試">暫無測站</option>
+    </select>
+    <input type="button" value="確認" id="confirm">
+    <h2>
+        最近測站：
+        <span id="nearSite"></span>
+    </h2>
+    <h2>
+        搜尋結果:
+        <span id="searchResult"></span>
+    </h2>
+    <ul>
+        <li>
+            AQI：
+            <span id="aqi"></span>
+        </li>
+        <li>
+            PM2.5:
+            <span id="pm"></span>
+        </li>
+        <li>
+            發佈時間：
+            <span id="time"></span>
+        </li>
+        <li>
+            狀態：
+            <span id="airstatus"></span>
+        </li>
+    </ul>
+    <h2>AQI指標</h2>
+    <div>
+        0~50:
+    </div>
+    <h2>
+        地圖
+    </h2>
+
+    <div id="map">
+
+    </div>
+    <script>
+        var data;
+        var nowLongitude,nowLatitude,increaseNum=1000000;
+        var everyDistance = [],minDistance=10000000,minKey;
+        var nearSite = document.getElementById("nearSite"),
+            aqi=document.getElementById("aqi"),
+            pm=document.getElementById("pm"),
+            time=document.getElementById("time"),
+            airstatus=document.getElementById("airstatus");
+        var searchSite = document.getElementById("searchSite"),
+            confirm = document.getElementById("confirm");
+            searchResult = document.getElementById("searchResult");
+        var url="https://opendata.epa.gov.tw/api/v1/AQI?%24skip=0&%24top=1000&%24format=json",
+            charturl="https://opendata.epa.gov.tw/api/v1/ATM00679?%24skip=0&%24top=1000&%24format=json";
+        var map;
+
+    
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET',url,true);
+        xhr.send();
+        xhr.onload = function(){
+            data = JSON.parse(xhr.response);
+            getLocation();
+        }
+        
+        function getLocation()
+        {
+            if (navigator.geolocation)
+            {
+                navigator.geolocation.getCurrentPosition(showPosition);
+            }
+            else
+            {
+                alert("瀏覽器不支援");
+            }
+        }
+        function showPosition(position)
+        {
+            nowLatitude = position.coords.latitude;
+            nowLongitude = position.coords.longitude;
+            let a=[],b=[];
+            for(let i =0;i<data.length;i++){
+                a[i]=(nowLongitude-data[i].Longitude)*(nowLongitude-data[i].Longitude);
+                b[i]=(nowLatitude-data[i].Latitude)*(nowLatitude-data[i].Latitude);
+                everyDistance[i]=(a[i]+b[i])*increaseNum;
+                if(everyDistance[i]<minDistance){
+                    minDistance=everyDistance[i];
+                    minKey=i;
+                }
+            }
+            nearSite.innerHTML= data[minKey].SiteName;
+            aqi.innerHTML= data[minKey]['AQI'];
+            pm.innerHTML= data[minKey]['PM2.5'];
+            time.innerHTML= data[minKey].PublishTime;
+            airstatus.innerHTML= data[minKey].Status;
+            addmarker();
+            search();
+        }
+        function search(){
+            var optionGroup="";
+            for(let i =0;i<data.length;i++){
+                optionGroup += '<option value="'+i+'">'+data[i].SiteName+'</option>';
+            }
+            searchSite.innerHTML = optionGroup;
+        }
+        confirm.addEventListener('click',function(){
+            searchResult.innerHTML= data[searchSite.value].SiteName;
+            aqi.innerHTML= data[searchSite.value]['AQI'];
+            pm.innerHTML= data[searchSite.value]['PM2.5'];
+            time.innerHTML= data[searchSite.value].PublishTime;
+            airstatus.innerHTML= data[searchSite.value].Status;
+        });
+
+        //初始化地圖，一開始是整個台灣，api連上後，標上各個測站的marker，還有數字，並加上infowindow
+        function initialize(position) {
+            map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 8,
+                center: new google.maps.LatLng(23.5,121),
+                mapTypeId: 'terrain'
+            });
+        }
+        function addmarker(){
+            var markerLatLng = [],marker=[];
+            for(let i =0;i<data.length;i++){
+                markerLatLng.push({});
+                markerLatLng[i].lat = parseFloat(data[i].Latitude,10);
+                markerLatLng[i].lng = parseFloat(data[i].Longitude,10);
+                marker[i]= new google.maps.Marker({
+                    position:markerLatLng[i],
+                    map:map,
+                    icon: {
+                        // path: google.maps.SymbolPath.FORWARD_OPEN_ARROW,
+                        // scale: 3,
+                        // strokeColor:"green"
+                        path: google.maps.SymbolPath.CIRCLE,
+                        fillColor: 'red',
+                        fillOpacity: data[i]['AQI']/200,
+                        scale:  data[i]['AQI']/5,
+                        strokeWeight: .5,
+                        strokeColor: 'white'
+                    },
+                    label:{text:data[i]['AQI'],color:"blue"}
+                });
+
+            }
+        }
+          
+
+
+
+    </script>
+</body>
+</html>
