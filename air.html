@@ -86,7 +86,7 @@
         </h2>
     
         <div id="map">
-    
+
         </div>
         <a href="https://opendata.epa.gov.tw/Data/Contents/AQI/">資料來源：行政院環境保護署。環境資源資料開放平臺。</a>
     </div>
@@ -119,6 +119,9 @@
         var xhr = new XMLHttpRequest();
         xhr.open('GET',url,true);
         xhr.send();
+        if(xhr.readyState!=4){
+            nearSite.innerHTML="目前無法連上API";
+        }
         xhr.onload = function(){
             data = JSON.parse(xhr.response);
             getLocation();
