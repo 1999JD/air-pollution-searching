@@ -105,7 +105,9 @@
         var url="https://opendata.epa.gov.tw/api/v1/AQI?%24skip=0&%24top=1000&%24format=json",
             charturl="https://opendata.epa.gov.tw/api/v1/ATM00679?%24skip=0&%24top=1000&%24format=json";
         var map, markerLatLng = [],marker=[],infowindow=[],markercolor=[];
+        var xhr = new XMLHttpRequest();
 
+        
         
         function initialize(position) {
             map = new google.maps.Map(document.getElementById('map'), {
@@ -113,18 +115,19 @@
                 center: new google.maps.LatLng(23.5,121),
                 mapTypeId: 'terrain'
             });
-            getLocation();
+            api();
         }
-        initialize();
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET',url,true);
-        xhr.send();
-        if(xhr.readyState!=4){
-            nearSite.innerHTML="目前無法連上API";
-        }
-        xhr.onload = function(){
-            data = JSON.parse(xhr.response);
-            getLocation();
+
+        function api(){
+            xhr.open('GET',url,true);
+            xhr.send();
+            if(xhr.readyState!=4){
+                nearSite.innerHTML="目前無法連上API";
+            }
+            xhr.onload = function(){
+                data = JSON.parse(xhr.response);
+                getLocation();
+            }
         }
         
         function getLocation()
