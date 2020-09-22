@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <script type="text/javascript" async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0D3f-S4Vf68qZ9OcIr01UXBEunVVUdW8&callback=initialize"></script>    
+    <script type="text/javascript" async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0D3f-S4Vf68qZ9OcIr01UXBEunVVUdW8"></script>    
     <script src='https://kit.fontawesome.com/8e7fb7d8d3.js' crossorigin='anonymous'></script>   
     <title>空汙查詢
     </title>
 </head>
-<body>
+<body onload="initialize()">
     <div class="content">
         <h1>即時空氣品質查詢  <i class="fas fa-smog"></i>  <i class="fas fa-search"></i></h1>
         <h2>
@@ -106,8 +106,6 @@
             charturl="https://opendata.epa.gov.tw/api/v1/ATM00679?%24skip=0&%24top=1000&%24format=json";
         var map, markerLatLng = [],marker=[],infowindow=[],markercolor=[];
         var xhr = new XMLHttpRequest();
-
-        
         
         function initialize(position) {
             map = new google.maps.Map(document.getElementById('map'), {
